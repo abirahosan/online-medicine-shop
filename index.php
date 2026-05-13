@@ -7,24 +7,11 @@ require 'controllers.php';
 
 $page = $_GET['page'] ?? 'login';
 
-//logout
+
 if ($page === 'logout') {
     $_SESSION = [];
     session_destroy();
-    setcookie('remember_me', '', time() - 3600, '/');
     header('Location: index.php?page=login');
-    exit;
-}
-
-//ajax
-if ($page === 'ajax_orders') {
-    header('Content-Type: application/json');
-    if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
-        http_response_code(403);
-        echo json_encode(['error' => 'Unauthorized']);
-        exit;
-    }
-    ordersCtrl($conn);
     exit;
 }
 
@@ -46,6 +33,7 @@ if (in_array($page, $adminPages) && $_SESSION['user']['role'] !== 'admin') {
     header('Location: index.php?page=login');
     exit;
 }
+
 
 switch ($page) {
     case 'login':      loginCtrl($conn);      break;
