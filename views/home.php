@@ -8,7 +8,7 @@
 </head>
 <body class="app-body">
 
-//Navbar 
+<!-- Navbar -->
 <header class="navbar">
     <div class="navbar-inner">
         <a class="brand" href="index.php?page=home">
@@ -68,7 +68,7 @@
         </div>
     </div>
 
-    //Categories
+    <!-- Categories -->
     <div class="page-header">
         <div>
             <h1 class="page-title">Browse Medicines</h1>
@@ -88,7 +88,7 @@
         <?php endforeach; ?>
     </div>
 
-    //Medicine list
+    <!-- Medicine list -->
     <div class="medicine-list" id="medicineList">
         <?php if (empty($medicines)): ?>
             <p style="color:var(--text-muted);font-size:13px;font-style:italic;">No medicines found.</p>
@@ -122,7 +122,7 @@
 
 <footer class="footer">&copy; <?= date('Y') ?> MediShop. All rights reserved.</footer>
 
-//AJAX Search
+<!-- AJAX Search -->
 <script>
 (function () {
     var qInput      = document.getElementById('searchQ');
