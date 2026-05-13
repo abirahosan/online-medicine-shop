@@ -1,7 +1,7 @@
 <?php
-// ================================================================
-// FRONT CONTROLLER - router
-// ================================================================
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+// FRONT CONTROLLER (router)
 session_start();
 
 require 'config.php';
@@ -10,38 +10,50 @@ require 'controllers.php';
 
 $page = $_GET['page'] ?? 'home';
 
-/* ---------- Logout ---------- */
+//Logout
 if ($page === 'logout') {
-    logoutCtrl();
+    $_SESSION = [];
+    session_destroy();
+    setcookie('remember_email', '', time() - 3600, '/');
+    header('Location: index.php?page=login');
+    exit;
 }
 
-/* ---------- AJAX search endpoint ---------- */
-if ($page === 'ajax') {
+//AJAX search endpoint 
+if ($page === 'ajax_search') {
     ajaxSearchCtrl($conn);
     exit;
 }
 
-/* ---------- Public pages ---------- */
+//Auth gates 
 $publicPages = ['login', 'register'];
 
 // Already logged in -> skip login/register
-if (in_array($page, $publicPages) && isset($_SESSION['user'])) {
+if (in_array($page, $publicPages) && isset($_SESSION['user_id'])) {
     header('Location: index.php?page=home');
     exit;
 }
 
 // Protected pages require login
-if (!in_array($page, $publicPages) && !isset($_SESSION['user'])) {
+$protectedPages = ['profile'];
+if (in_array($page, $protectedPages) && !isset($_SESSION['user_id'])) {
     header('Location: index.php?page=login');
     exit;
 }
 
-/* ---------- Dispatch ---------- */
+// Admin gate
+if ($page === 'admin' && (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin')) {
+    header('Location: index.php?page=login');
+    exit;
+}
+
+// Dispatch 
 switch ($page) {
-    case 'login':    loginCtrl($conn);    break;
-    case 'register': registerCtrl($conn); break;
-    case 'profile':  profileCtrl($conn);  break;
-    case 'home':     homeCtrl($conn);     break;
+    case 'register':    registerCtrl($conn);    break;
+    case 'login':       loginCtrl($conn);       break;
+    case 'profile':     profileCtrl($conn);     break;
+    case 'home':        homeCtrl($conn);        break;
+    case 'categories':  categoriesCtrl($conn);  break;
     default:
         header('Location: index.php?page=home');
         exit;
