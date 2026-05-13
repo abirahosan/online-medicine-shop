@@ -74,16 +74,7 @@
             </div>
         </div>
     </div>
-
-    <div class="card">
-        <h3 class="card-title">Quick Actions</h3>
-        <div class="quick-actions">
-            <a href="index.php?page=categories&action=add" class="btn btn-primary">+ Add Category</a>
-            <a href="index.php?page=medicines&action=add"  class="btn btn-primary">+ Add Medicine</a>
-            <a href="index.php?page=orders"                class="btn btn-secondary">View Orders</a>
-            <a href="index.php?page=history"               class="btn btn-secondary">Purchase History</a>
-        </div>
-    </div>
+    
 </main>
 
 <footer class="footer">&copy; <?= date('Y') ?> Online Medicine Shop</footer>
