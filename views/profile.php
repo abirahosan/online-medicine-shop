@@ -60,7 +60,7 @@
         <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
     <?php endif; ?>
 
-    <!-- ============ Profile Info ============ -->
+    <!--  Profile Info -->
     <div class="card form-card">
         <h3 class="card-title">Account Information</h3>
         <form method="POST" action="index.php?page=profile" class="form" novalidate id="infoForm">
@@ -99,7 +99,7 @@
         </form>
     </div>
 
-    <!-- ============ Profile Picture ============ -->
+    <!-- Profile Picture  -->
     <div class="card form-card">
         <h3 class="card-title">Profile Picture</h3>
         <form method="POST" action="index.php?page=profile" class="form"
@@ -128,7 +128,7 @@
         </form>
     </div>
 
-    <!-- ============ Change Password ============ -->
+    <!--  Change Password  -->
     <div class="card form-card">
         <h3 class="card-title">Change Password</h3>
         <form method="POST" action="index.php?page=profile" class="form" novalidate id="pwForm">
@@ -161,7 +161,8 @@
 <footer class="footer">&copy; <?= date('Y') ?> MediShop. All rights reserved.</footer>
 
 <script>
-/* JS validation — profile info */
+//JS validation 
+//profile info
 document.getElementById('infoForm').addEventListener('submit', function (e) {
     var name  = document.getElementById('name').value.trim();
     var email = document.getElementById('email').value.trim();
@@ -177,7 +178,7 @@ document.getElementById('infoForm').addEventListener('submit', function (e) {
     }
 });
 
-/* JS validation — picture */
+// picture 
 document.getElementById('picForm').addEventListener('submit', function (e) {
     var file = document.getElementById('profile_picture').files[0];
     if (!file) {
@@ -197,7 +198,7 @@ document.getElementById('picForm').addEventListener('submit', function (e) {
     }
 });
 
-/* JS validation — password */
+//password 
 document.getElementById('pwForm').addEventListener('submit', function (e) {
     var current = document.getElementById('current_password').value;
     var newPw   = document.getElementById('new_password').value;
