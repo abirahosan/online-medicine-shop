@@ -115,8 +115,7 @@
                         <th>#</th>
                         <th>Name</th>
                         <th>Type</th>
-                        <th>Created</th>
-                        <th class="text-right">Actions</th>
+                        <th style="text-align:right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -132,7 +131,6 @@
                                         <?= ucfirst($cat['category_type']) ?>
                                     </span>
                                 </td>
-                                <td><?= date('d M Y', strtotime($cat['created_at'])) ?></td>
                                 <td class="text-right">
                                     <a class="btn-sm btn-edit"
                                        href="index.php?page=categories&action=edit&id=<?= $cat['id'] ?>">Edit</a>

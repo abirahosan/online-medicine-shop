@@ -64,7 +64,7 @@
                         <th>Shipping Address</th>
                         <th>Date</th>
                         <th>Status</th>
-                        <th class="text-right">Actions</th>
+                        <th style="text-align:right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>

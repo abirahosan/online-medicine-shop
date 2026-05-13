@@ -172,7 +172,7 @@
                         <th>Vendor</th>
                         <th>Price</th>
                         <th>Stock</th>
-                        <th class="text-right">Actions</th>
+                        <th style="text-align:right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>

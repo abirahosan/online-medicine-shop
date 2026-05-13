@@ -70,7 +70,7 @@
                         <th>Phone</th>
                         <th>Address</th>
                         <th>Joined</th>
-                        <th class="text-right">Actions</th>
+                        <th style="text-align:right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
