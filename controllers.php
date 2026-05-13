@@ -1,55 +1,71 @@
 <?php
-// ================================================================
-// CONTROLLERS - Task 1: Auth, Profile, Home, Browse, AJAX Search
-// ================================================================
 
-/* ============== CSRF helpers ============== */
-function csrfToken() {
-    if (empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+
+// Register 
+function registerCtrl($conn) {
+    $error = $success = '';
+    $old = ['name' => '', 'email' => '', 'role' => 'customer', 'address' => '', 'phone' => ''];
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $name     = trim($_POST['name']    ?? '');
+        $email    = trim($_POST['email']   ?? '');
+        $password = $_POST['password']     ?? '';
+        $confirm  = $_POST['confirm']      ?? '';
+        $role     = $_POST['role']         ?? 'customer';
+        $address  = trim($_POST['address'] ?? '');
+        $phone    = trim($_POST['phone']   ?? '');
+        $old = compact('name', 'email', 'role', 'address', 'phone');
+
+        if ($name === '' || $email === '' || $password === '') {
+            $error = 'Name, email and password are required.';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = 'Enter a valid email address.';
+        } elseif (strlen($password) < 8) {
+            $error = 'Password must be at least 8 characters.';
+        } elseif ($password !== $confirm) {
+            $error = 'Passwords do not match.';
+        } elseif (!in_array($role, ['admin', 'customer'])) {
+            $error = 'Invalid role selected.';
+        } elseif (emailExists($conn, $email)) {
+            $error = 'That email is already registered.';
+        } else {
+            if (createUser($conn, $name, $email, $password, $role, $address, $phone)) {
+                $success = 'Account created! You can now log in.';
+                $old = ['name' => '', 'email' => '', 'role' => 'customer', 'address' => '', 'phone' => ''];
+            } else {
+                $error = 'Registration failed. Please try again.';
+            }
+        }
     }
-    return $_SESSION['csrf_token'];
+
+    require 'views/register.php';
 }
 
-function verifyCsrf() {
-    $token = $_POST['csrf_token'] ?? '';
-    if (!hash_equals($_SESSION['csrf_token'] ?? '', $token)) {
-        http_response_code(403);
-        die('CSRF validation failed.');
-    }
-}
-
-/* ============== Login ============== */
+//Login 
 function loginCtrl($conn) {
     $error   = '';
     $prefill = $_COOKIE['remember_email'] ?? '';
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        verifyCsrf();
         $email    = trim($_POST['email']    ?? '');
         $password = $_POST['password']      ?? '';
         $remember = isset($_POST['remember']);
 
         if ($email === '' || $password === '') {
             $error = 'Please fill in both fields.';
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = 'Enter a valid email address.';
         } else {
             $user = getUserByEmail($conn, $email);
             if ($user && password_verify($password, $user['password_hash'])) {
-                session_regenerate_id(true);
-                $_SESSION['user'] = [
-                    'id'      => $user['id'],
-                    'name'    => $user['name'],
-                    'email'   => $user['email'],
-                    'role'    => $user['role'],
-                    'picture' => $user['profile_picture'],
-                ];
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['name']    = $user['name'];
+                $_SESSION['role']    = $user['role'];
+
                 if ($remember) {
                     setcookie('remember_email', $email, time() + 86400 * 30, '/');
                 } else {
                     setcookie('remember_email', '', time() - 3600, '/');
                 }
+
                 header('Location: index.php?page=home');
                 exit;
             }
@@ -60,76 +76,16 @@ function loginCtrl($conn) {
     require 'views/login.php';
 }
 
-/* ============== Register ============== */
-function registerCtrl($conn) {
-    $error   = '';
-    $success = '';
-    $old     = ['name' => '', 'email' => '', 'address' => '', 'phone' => '', 'role' => 'customer'];
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        verifyCsrf();
-        $name     = trim($_POST['name']            ?? '');
-        $email    = trim($_POST['email']           ?? '');
-        $password = $_POST['password']             ?? '';
-        $confirm  = $_POST['confirm_password']     ?? '';
-        $role     = $_POST['role']                 ?? 'customer';
-        $address  = trim($_POST['address']         ?? '');
-        $phone    = trim($_POST['phone']           ?? '');
-        $old      = compact('name', 'email', 'address', 'phone', 'role');
-
-        if ($name === '' || $email === '' || $password === '') {
-            $error = 'Name, email, and password are required.';
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = 'Enter a valid email address.';
-        } elseif (strlen($password) < 8) {
-            $error = 'Password must be at least 8 characters.';
-        } elseif ($password !== $confirm) {
-            $error = 'Passwords do not match.';
-        } elseif (!in_array($role, ['admin', 'customer'], true)) {
-            $error = 'Invalid role selected.';
-        } elseif (emailExists($conn, $email)) {
-            $error = 'This email is already registered.';
-        } else {
-            $id = createUser($conn, $name, $email, $password, $role,
-                             $address ?: null, $phone ?: null);
-            if ($id) {
-                $success = 'Account created! You can now log in.';
-                $old = ['name' => '', 'email' => '', 'address' => '', 'phone' => '', 'role' => 'customer'];
-            } else {
-                $error = 'Registration failed. Please try again.';
-            }
-        }
-    }
-
-    require 'views/register.php';
-}
-
-/* ============== Logout ============== */
-function logoutCtrl() {
-    $_SESSION = [];
-    session_destroy();
-    setcookie('remember_email', '', time() - 3600, '/');
-    header('Location: index.php?page=login');
-    exit;
-}
-
-/* ============== Profile ============== */
+//Profile 
 function profileCtrl($conn) {
-    if (!isset($_SESSION['user'])) {
-        header('Location: index.php?page=login');
-        exit;
-    }
-
-    $user    = getUserById($conn, $_SESSION['user']['id']);
-    $error   = '';
-    $success = '';
+    $user    = getUserById($conn, $_SESSION['user_id']);
+    $error   = $success = '';
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        verifyCsrf();
-        $action = $_POST['action'] ?? 'profile';
+        $action = $_POST['action'] ?? '';
 
-        /* --- Update profile info + optional picture --- */
-        if ($action === 'profile') {
+        /* --- Update info --- */
+        if ($action === 'update_info') {
             $name    = trim($_POST['name']    ?? '');
             $email   = trim($_POST['email']   ?? '');
             $address = trim($_POST['address'] ?? '');
@@ -139,73 +95,64 @@ function profileCtrl($conn) {
                 $error = 'Name and email are required.';
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $error = 'Enter a valid email address.';
-            } elseif (emailExists($conn, $email, $user['id'])) {
-                $error = 'This email is already used by another account.';
+            } elseif (emailExists($conn, $email, $_SESSION['user_id'])) {
+                $error = 'That email is used by another account.';
             } else {
-                $picturePath = null;
-
-                if (!empty($_FILES['profile_picture']['name'])) {
-                    $file    = $_FILES['profile_picture'];
-                    $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-                    $maxSize = 2 * 1024 * 1024;
-
-                    $finfo = finfo_open(FILEINFO_MIME_TYPE);
-                    $mime  = finfo_file($finfo, $file['tmp_name']);
-                    finfo_close($finfo);
-
-                    if ($file['error'] !== UPLOAD_ERR_OK) {
-                        $error = 'File upload error. Please try again.';
-                    } elseif (!in_array($mime, $allowed, true)) {
-                        $error = 'Profile picture must be JPEG, PNG, GIF, or WebP.';
-                    } elseif ($file['size'] > $maxSize) {
-                        $error = 'Profile picture must be under 2 MB.';
-                    } else {
-                        $ext       = pathinfo($file['name'], PATHINFO_EXTENSION);
-                        $filename  = 'user_' . $user['id'] . '_' . time() . '.' . strtolower($ext);
-                        $uploadDir = 'public/uploads/profiles/';
-                        if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-
-                        if (move_uploaded_file($file['tmp_name'], $uploadDir . $filename)) {
-                            if (!empty($user['profile_picture']) && file_exists($user['profile_picture'])) {
-                                unlink($user['profile_picture']);
-                            }
-                            $picturePath = $uploadDir . $filename;
-                        } else {
-                            $error = 'Failed to save profile picture.';
-                        }
-                    }
-                }
-
-                if ($error === '') {
-                    updateUserProfile($conn, $user['id'], $name, $email,
-                                      $address ?: null, $phone ?: null, $picturePath);
-                    // Refresh session
-                    $_SESSION['user']['name']  = $name;
-                    $_SESSION['user']['email'] = $email;
-                    if ($picturePath) $_SESSION['user']['picture'] = $picturePath;
-                    $user    = getUserById($conn, $user['id']);
+                if (updateUserProfile($conn, $_SESSION['user_id'], $name, $email, $address, $phone)) {
+                    $_SESSION['name'] = $name;
+                    $user    = getUserById($conn, $_SESSION['user_id']);
                     $success = 'Profile updated successfully.';
+                } else {
+                    $error = 'Update failed. Try again.';
                 }
             }
         }
 
-        /* --- Change password --- */
-        if ($action === 'password') {
+        //Update picture 
+        if ($action === 'update_picture') {
+            if (empty($_FILES['profile_picture']['name'])) {
+                $error = 'Please choose an image file.';
+            } else {
+                $allowed = ['image/jpeg', 'image/png', 'image/jpg'];
+                $maxSize = 2 * 1024 * 1024;
+                $mime    = mime_content_type($_FILES['profile_picture']['tmp_name']);
+                $size    = $_FILES['profile_picture']['size'];
+
+                if (!in_array($mime, $allowed)) {
+                    $error = 'Only JPEG and PNG images are allowed.';
+                } elseif ($size > $maxSize) {
+                    $error = 'Image must be under 2MB.';
+                } else {
+                    $ext      = pathinfo($_FILES['profile_picture']['name'], PATHINFO_EXTENSION);
+                    $filename = uniqid('pfp_', true) . '.' . strtolower($ext);
+                    $dest     = __DIR__ . '/public/uploads/profiles/' . $filename;
+
+                    if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $dest)) {
+                        updateUserPicture($conn, $_SESSION['user_id'], $filename);
+                        $user    = getUserById($conn, $_SESSION['user_id']);
+                        $success = 'Profile picture updated.';
+                    } else {
+                        $error = 'Upload failed. Check folder permissions.';
+                    }
+                }
+            }
+        }
+
+        //Change password 
+        if ($action === 'change_password') {
             $current = $_POST['current_password'] ?? '';
             $new     = $_POST['new_password']      ?? '';
             $confirm = $_POST['confirm_password']  ?? '';
+            $hash    = getUserPasswordHash($conn, $_SESSION['user_id']);
 
-            if ($current === '' || $new === '' || $confirm === '') {
-                $error = 'All password fields are required.';
-            } elseif (!password_verify($current, $user['password_hash'])) {
+            if (!password_verify($current, $hash)) {
                 $error = 'Current password is incorrect.';
             } elseif (strlen($new) < 8) {
                 $error = 'New password must be at least 8 characters.';
             } elseif ($new !== $confirm) {
                 $error = 'New passwords do not match.';
             } else {
-                updateUserPassword($conn, $user['id'], $new);
-                $user    = getUserById($conn, $user['id']);
+                updateUserPassword($conn, $_SESSION['user_id'], $new);
                 $success = 'Password changed successfully.';
             }
         }
@@ -214,26 +161,37 @@ function profileCtrl($conn) {
     require 'views/profile.php';
 }
 
-/* ============== Home Page ============== */
+//Home 
 function homeCtrl($conn) {
-    $categories = getCategoriesWithCount($conn);
-    $vendors    = getAllVendors($conn);
-
-    $activeCat  = isset($_GET['category']) ? (int) $_GET['category'] : null;
-    $activeType = isset($_GET['type']) && in_array($_GET['type'], ['liquid', 'solid'], true)
-                  ? $_GET['type'] : null;
-
-    $medicines  = getMedicines($conn, $activeCat, $activeType);
-    $user       = $_SESSION['user'] ?? null;
-
+    $categories = getCategories($conn);
+    $medicines  = getMedicines($conn);
     require 'views/home.php';
 }
 
-/* ============== AJAX Search Endpoint ============== */
+//Categories 
+function categoriesCtrl($conn) {
+    $categories  = getCategories($conn);
+    $activeCatId = intval($_GET['cat']  ?? 0);
+    $typeFilter  = $_GET['type'] ?? '';
+
+    if ($activeCatId > 0) {
+        $medicines = getMedicinesByCategory($conn, $activeCatId);
+    } else {
+        $medicines = getMedicines($conn);
+    }
+
+    if (in_array($typeFilter, ['liquid', 'solid'])) {
+        $medicines = array_values(array_filter($medicines,
+            fn($m) => $m['category_type'] === $typeFilter));
+    }
+
+    require 'views/categories.php';
+}
+
+//AJAX Search 
 function ajaxSearchCtrl($conn) {
     header('Content-Type: application/json');
-
-    if (!isset($_SESSION['user'])) {
+    if (!isset($_SESSION['user_id'])) {
         http_response_code(403);
         echo json_encode(['error' => 'Unauthorized']);
         exit;
@@ -241,25 +199,25 @@ function ajaxSearchCtrl($conn) {
 
     $q      = trim($_GET['q']      ?? '');
     $vendor = trim($_GET['vendor'] ?? '');
-    $genre  = trim($_GET['genre']  ?? '');
+    $catId  = intval($_GET['cat']  ?? 0);
 
-    $results = searchMedicines($conn, $q, $vendor, $genre);
+    $results = searchMedicines($conn, $q, $vendor, $catId);
 
     $out = [];
     foreach ($results as $m) {
         $out[] = [
-            'id'            => (int)   $m['id'],
-            'name'          =>         $m['name'],
-            'vendor_name'   =>         $m['vendor_name'],
-            'price'         => (float) $m['price'],
-            'availability'  => (int)   $m['availability'],
-            'category_name' =>         $m['category_name'],
-            'category_type' =>         $m['category_type'],
-            'image_path'    =>         $m['image_path'],
-            'description'   =>         $m['description'],
+            'id'            => $m['id'],
+            'name'          => htmlspecialchars($m['name']),
+            'vendor_name'   => htmlspecialchars($m['vendor_name']),
+            'price'         => number_format($m['price'], 2),
+            'availability'  => $m['availability'],
+            'category_name' => htmlspecialchars($m['category_name']),
+            'category_type' => $m['category_type'],
+            'image_path'    => $m['image_path'] ?? '',
         ];
     }
 
     echo json_encode($out);
     exit;
 }
+?>
