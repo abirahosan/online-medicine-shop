@@ -24,6 +24,8 @@ A web-based medicine shop application built with PHP MVC architecture.
 5. Default admin login:
    - Email: admin@medicine.com
    - Password: admin123
+6. **Mac users only** — run this once after cloning:
+chmod -R 777 /Applications/XAMPP/xamppfiles/htdocs/online-medicine-shop/public/
 
 ## Database
 Shared schema includes: users, categories, medicines, cart, orders, order_items, payments
