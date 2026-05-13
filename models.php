@@ -77,8 +77,8 @@ function addMedicine($conn, $name, $category_id, $vendor, $price, $stock, $desc,
     $stmt = mysqli_prepare($conn,
         "INSERT INTO medicines (name, category_id, vendor_name, price, availability, description, image_path)
          VALUES (?, ?, ?, ?, ?, ?, ?)");
-    mysqli_stmt_bind_param($stmt, 'siidsss',
-        $name, $category_id, $vendor, $price, $stock, $desc, $image_path);
+    mysqli_stmt_bind_param($stmt, 'sisdiss',
+    $name, $category_id, $vendor, $price, $stock, $desc, $image_path);
     $ok = mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
     return $ok;
@@ -88,8 +88,8 @@ function updateMedicine($conn, $id, $name, $category_id, $vendor, $price, $stock
     $stmt = mysqli_prepare($conn,
         "UPDATE medicines SET name=?, category_id=?, vendor_name=?, price=?,
          availability=?, description=?, image_path=? WHERE id=?");
-    mysqli_stmt_bind_param($stmt, 'siidsssi',
-        $name, $category_id, $vendor, $price, $stock, $desc, $image_path, $id);
+    mysqli_stmt_bind_param($stmt, 'sisdsssi',
+    $name, $category_id, $vendor, $price, $stock, $desc, $image_path, $id);
     $ok = mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
     return $ok;

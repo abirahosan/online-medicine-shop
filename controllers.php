@@ -1,4 +1,67 @@
 <?php
+/* ==================== LOGIN (placeholder for Task 1) ==================== */
+function loginCtrl($conn) {
+    if (isset($_SESSION['user'])) {
+        header('Location: index.php?page=dashboard');
+        exit;
+    }
+
+    $error = '';
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $email = trim($_POST['email'] ?? '');
+        $pass  = $_POST['password'] ?? '';
+
+        $stmt = mysqli_prepare($conn,
+            "SELECT id, name, email, password_hash, role FROM users WHERE email = ?");
+        mysqli_stmt_bind_param($stmt, 's', $email);
+        mysqli_stmt_execute($stmt);
+        $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        mysqli_stmt_close($stmt);
+
+        if ($row && password_verify($pass, $row['password_hash'])) {
+            $_SESSION['user'] = [
+                'id'   => $row['id'],
+                'name' => $row['name'],
+                'role' => $row['role']
+            ];
+            header('Location: index.php?page=dashboard');
+            exit;
+        }
+        $error = 'Invalid email or password.';
+    }
+
+    echo '<!DOCTYPE html><html><head>
+        <link rel="stylesheet" href="style.css">
+        </head><body style="display:flex;align-items:center;justify-content:center;height:100vh;">
+        <div class="card" style="width:360px;">
+            <h2 class="card-title">MediShop Login</h2>
+            ' . (!empty($error) ? '<div class="alert alert-error">' . htmlspecialchars($error) . '</div>' : '') . '
+            <form method="POST" class="form" style="margin-top:16px;">
+                <div class="field">
+                    <label>Email</label>
+                    <input type="email" name="email" placeholder="admin@medicine.com" required>
+                </div>
+                <div class="field">
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" style="width:100%;">Login</button>
+                </div>
+            </form>
+        </div>
+    </body></html>';
+}
+
+/* ==================== REGISTER (placeholder for Task 1) ==================== */
+function registerCtrl($conn) {
+    // This will be implemented by Task 1 (22-48988-3)
+    echo '<!DOCTYPE html><html><body>
+        <h2>Register page - To be implemented by Task 1</h2>
+    </body></html>';
+}
+
+//admin gate
 function adminGate() {
     if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
         header('Location: index.php?page=login');
@@ -88,6 +151,9 @@ function medicineCtrl($conn) {
     $error   = '';
     $editing = null;
 
+    $upload_dir = __DIR__ . '/public/uploads/medicines/';
+    $upload_web = 'public/uploads/medicines/';
+
     //add
     if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $name        = trim($_POST['name'] ?? '');
@@ -108,10 +174,10 @@ function medicineCtrl($conn) {
             //image upload
             $image_path = '';
             if (!empty($_FILES['image']['name'])) {
-                $allowed     = ['image/jpeg', 'image/png'];
-                $max_size    = 2 * 1024 * 1024; // 2MB
-                $finfo       = finfo_open(FILEINFO_MIME_TYPE);
-                $mime        = finfo_file($finfo, $_FILES['image']['tmp_name']);
+                $allowed  = ['image/jpeg', 'image/png'];
+                $max_size = 2 * 1024 * 1024;
+                $finfo    = finfo_open(FILEINFO_MIME_TYPE);
+                $mime     = finfo_file($finfo, $_FILES['image']['tmp_name']);
                 finfo_close($finfo);
 
                 if (!in_array($mime, $allowed)) {
@@ -119,13 +185,11 @@ function medicineCtrl($conn) {
                 } elseif ($_FILES['image']['size'] > $max_size) {
                     $error = 'Image must be under 2MB.';
                 } else {
-                    $upload_dir = 'public/uploads/medicines/';
-                    if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
-                    $filename   = uniqid() . '_' . basename($_FILES['image']['name']);
-                    $image_path = $upload_dir . $filename;
-                    if (!move_uploaded_file($_FILES['image']['tmp_name'], $image_path)) {
-                        $error      = 'Failed to upload image.';
-                        $image_path = '';
+                    $filename = uniqid() . '_' . basename($_FILES['image']['name']);
+                    if (!move_uploaded_file($_FILES['image']['tmp_name'], $upload_dir . $filename)) {
+                        $error = 'Failed to upload image.';
+                    } else {
+                        $image_path = $upload_web . $filename;
                     }
                 }
             }
@@ -167,9 +231,8 @@ function medicineCtrl($conn) {
             $error   = 'Stock must be a non-negative whole number.';
             $editing = getMedicine($conn, $id);
         } else {
-            
-            $current     = getMedicine($conn, $id);
-            $image_path  = $current['image_path'];
+            $current    = getMedicine($conn, $id);
+            $image_path = $current['image_path'];
 
             if (!empty($_FILES['image']['name'])) {
                 $allowed  = ['image/jpeg', 'image/png'];
@@ -185,13 +248,12 @@ function medicineCtrl($conn) {
                     $error   = 'Image must be under 2MB.';
                     $editing = $current;
                 } else {
-                    $upload_dir = 'public/uploads/medicines/';
-                    if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
-                    $filename   = uniqid() . '_' . basename($_FILES['image']['name']);
-                    $new_path   = $upload_dir . $filename;
-                    if (move_uploaded_file($_FILES['image']['tmp_name'], $new_path)) {
-                        
-                        if ($image_path && file_exists($image_path)) unlink($image_path);
+                    $filename = uniqid() . '_' . basename($_FILES['image']['name']);
+                    $new_path = $upload_web . $filename;
+                    if (move_uploaded_file($_FILES['image']['tmp_name'], $upload_dir . $filename)) {
+                        if ($image_path && file_exists(__DIR__ . '/' . $image_path)) {
+                            unlink(__DIR__ . '/' . $image_path);
+                        }
                         $image_path = $new_path;
                     } else {
                         $error   = 'Failed to upload image.';

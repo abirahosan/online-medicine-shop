@@ -201,9 +201,7 @@
                                 <td><?= htmlspecialchars($med['vendor_name']) ?></td>
                                 <td>&#2547;<?= number_format($med['price'], 2) ?></td>
                                 <td>
-                                    <span class="badge <?= $med['availability'] > 0 ? 'badge--success' : 'badge--danger' ?>">
                                         <?= $med['availability'] ?>
-                                    </span>
                                 </td>
                                 <td class="text-right">
                                     <a class="btn-sm btn-edit"
