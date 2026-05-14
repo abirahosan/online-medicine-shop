@@ -1,7 +1,7 @@
 <?php
 
 
-//Register 
+// Register 
 function registerCtrl($conn) {
     $error = $success = '';
     $old = ['name' => '', 'email' => '', 'role' => 'customer', 'address' => '', 'phone' => ''];
@@ -22,6 +22,14 @@ function registerCtrl($conn) {
             $error = 'Enter a valid email address.';
         } elseif (strlen($password) < 8) {
             $error = 'Password must be at least 8 characters.';
+        } elseif (!preg_match('/[A-Z]/', $password)) {
+            $error = 'Password must contain at least one uppercase letter.';
+        } elseif (!preg_match('/[a-z]/', $password)) {
+            $error = 'Password must contain at least one lowercase letter.';
+        } elseif (!preg_match('/[0-9]/', $password)) {
+            $error = 'Password must contain at least one number.';
+        } elseif (!preg_match('/[\W_]/', $password)) {
+            $error = 'Password must contain at least one special character.';
         } elseif ($password !== $confirm) {
             $error = 'Passwords do not match.';
         } elseif ($role !== 'customer') {
@@ -76,7 +84,7 @@ function loginCtrl($conn) {
     require 'views/login.php';
 }
 
-//Profile 
+// Profile 
 function profileCtrl($conn) {
     $user    = getUserById($conn, $_SESSION['user_id']);
     $error   = $success = '';
@@ -138,7 +146,7 @@ function profileCtrl($conn) {
             }
         }
 
-        //Change password
+        // Change password 
         if ($action === 'change_password') {
             $current = $_POST['current_password'] ?? '';
             $new     = $_POST['new_password']      ?? '';
@@ -149,6 +157,14 @@ function profileCtrl($conn) {
                 $error = 'Current password is incorrect.';
             } elseif (strlen($new) < 8) {
                 $error = 'New password must be at least 8 characters.';
+            } elseif (!preg_match('/[A-Z]/', $new)) {
+                $error = 'Password must contain at least one uppercase letter.';
+            } elseif (!preg_match('/[a-z]/', $new)) {
+                $error = 'Password must contain at least one lowercase letter.';
+            } elseif (!preg_match('/[0-9]/', $new)) {
+                $error = 'Password must contain at least one number.';
+            } elseif (!preg_match('/[\W_]/', $new)) {
+                $error = 'Password must contain at least one special character.';
             } elseif ($new !== $confirm) {
                 $error = 'New passwords do not match.';
             } else {
@@ -161,7 +177,7 @@ function profileCtrl($conn) {
     require 'views/profile.php';
 }
 
-// Home 
+//Home 
 function homeCtrl($conn) {
     $categories = getCategories($conn);
     $medicines  = getMedicines($conn);
