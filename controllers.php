@@ -1,7 +1,6 @@
 <?php
 
-
-// Register 
+//Register 
 function registerCtrl($conn) {
     $error = $success = '';
     $old = ['name' => '', 'email' => '', 'role' => 'customer', 'address' => '', 'phone' => ''];
@@ -32,7 +31,7 @@ function registerCtrl($conn) {
             $error = 'Password must contain at least one special character.';
         } elseif ($password !== $confirm) {
             $error = 'Passwords do not match.';
-        } elseif ($role !== 'customer') {
+        } elseif (!in_array($role, ['admin', 'customer'])) {
             $error = 'Invalid role selected.';
         } elseif (emailExists($conn, $email)) {
             $error = 'That email is already registered.';
@@ -177,14 +176,14 @@ function profileCtrl($conn) {
     require 'views/profile.php';
 }
 
-//Home 
+// Home 
 function homeCtrl($conn) {
     $categories = getCategories($conn);
     $medicines  = getMedicines($conn);
     require 'views/home.php';
 }
 
-//Categories 
+// Categories 
 function categoriesCtrl($conn) {
     $categories  = getCategories($conn);
     $activeCatId = intval($_GET['cat']  ?? 0);
@@ -204,7 +203,7 @@ function categoriesCtrl($conn) {
     require 'views/categories.php';
 }
 
-//AJAX Search 
+// AJAX Search 
 function ajaxSearchCtrl($conn) {
     header('Content-Type: application/json');
     if (!isset($_SESSION['user_id'])) {
