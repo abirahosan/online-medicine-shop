@@ -8,7 +8,11 @@ require 'config.php';
 require 'models.php';
 require 'controllers.php';
 
-$page = $_GET['page'] ?? 'home';
+$page = $_GET['page'] ?? 'login';
+
+if (!isset($_GET['page']) && isset($_SESSION['user_id'])) {
+    $page = 'home';
+}
 
 //Logout
 if ($page === 'logout') {
