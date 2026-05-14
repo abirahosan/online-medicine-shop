@@ -99,7 +99,7 @@
         </form>
     </div>
 
-    <!-- Profile Picture  -->
+    <!-- Profile Picture -->
     <div class="card form-card">
         <h3 class="card-title">Profile Picture</h3>
         <form method="POST" action="index.php?page=profile" class="form"
@@ -128,7 +128,7 @@
         </form>
     </div>
 
-    <!--  Change Password  -->
+    <!-- Change Password  -->
     <div class="card form-card">
         <h3 class="card-title">Change Password</h3>
         <form method="POST" action="index.php?page=profile" class="form" novalidate id="pwForm">
@@ -161,8 +161,8 @@
 <footer class="footer">&copy; <?= date('Y') ?> MediShop. All rights reserved.</footer>
 
 <script>
-//JS validation 
-//profile info
+// JS validation 
+// profile info 
 document.getElementById('infoForm').addEventListener('submit', function (e) {
     var name  = document.getElementById('name').value.trim();
     var email = document.getElementById('email').value.trim();
@@ -178,7 +178,7 @@ document.getElementById('infoForm').addEventListener('submit', function (e) {
     }
 });
 
-// picture 
+//picture 
 document.getElementById('picForm').addEventListener('submit', function (e) {
     var file = document.getElementById('profile_picture').files[0];
     if (!file) {
@@ -203,6 +203,7 @@ document.getElementById('pwForm').addEventListener('submit', function (e) {
     var current = document.getElementById('current_password').value;
     var newPw   = document.getElementById('new_password').value;
     var confirm = document.getElementById('confirm_password').value;
+
     if (current === '' || newPw === '' || confirm === '') {
         e.preventDefault();
         alert('All password fields are required.');
@@ -211,6 +212,26 @@ document.getElementById('pwForm').addEventListener('submit', function (e) {
     if (newPw.length < 8) {
         e.preventDefault();
         alert('New password must be at least 8 characters.');
+        return;
+    }
+    if (!/[A-Z]/.test(newPw)) {
+        e.preventDefault();
+        alert('Password must contain at least one uppercase letter.');
+        return;
+    }
+    if (!/[a-z]/.test(newPw)) {
+        e.preventDefault();
+        alert('Password must contain at least one lowercase letter.');
+        return;
+    }
+    if (!/[0-9]/.test(newPw)) {
+        e.preventDefault();
+        alert('Password must contain at least one number.');
+        return;
+    }
+    if (!/[\W_]/.test(newPw)) {
+        e.preventDefault();
+        alert('Password must contain at least one special character.');
         return;
     }
     if (newPw !== confirm) {
