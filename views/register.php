@@ -14,10 +14,10 @@
         <h1>Create an Account</h1>
         <p>Join MediShop to browse medicines, manage orders and more.</p>
         <ul class="feature-list">
-            <li>Register as customer</li>
+            <li>Register as admin or customer</li>
             <li>Manage your profile anytime</li>
             <li>Secure password storage</li>
-            <li>Fast search</li>
+            <li>Fast AJAX search</li>
         </ul>
     </div>
 
@@ -38,15 +38,21 @@
                     <label for="name">Full Name</label>
                     <input type="text" id="name" name="name"
                            value="<?= htmlspecialchars($old['name']) ?>"
-                           placeholder="e.g. Full Name" required>
+                           placeholder="e.g. John Doe" required>
                 </div>
                 <div class="field">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email"
                            value="<?= htmlspecialchars($old['email']) ?>"
-                           placeholder="e.g. xxx@email.com" required>
+                           placeholder="e.g. john@email.com" required>
                 </div>
-                <input type="hidden" name="role" value="customer">
+                <div class="field">
+                    <label for="role">Role</label>
+                    <select id="role" name="role">
+                        <option value="customer" <?= $old['role'] === 'customer' ? 'selected' : '' ?>>Customer</option>
+                        <option value="admin"    <?= $old['role'] === 'admin'    ? 'selected' : '' ?>>Admin</option>
+                    </select>
+                </div>
                 <div class="field">
                     <label for="phone">Phone</label>
                     <input type="text" id="phone" name="phone"
