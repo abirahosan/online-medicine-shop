@@ -46,13 +46,7 @@
                            value="<?= htmlspecialchars($old['email']) ?>"
                            placeholder="e.g. john@email.com" required>
                 </div>
-                <div class="field">
-                    <label for="role">Role</label>
-                    <select id="role" name="role">
-                        <option value="customer" <?= $old['role'] === 'customer' ? 'selected' : '' ?>>Customer</option>
-                        <option value="admin"    <?= $old['role'] === 'admin'    ? 'selected' : '' ?>>Admin</option>
-                    </select>
-                </div>
+                <input type="hidden" name="role" value="customer">
                 <div class="field">
                     <label for="phone">Phone</label>
                     <input type="text" id="phone" name="phone"
