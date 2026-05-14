@@ -1,7 +1,7 @@
 <?php
 
 
-// Register 
+//Register 
 function registerCtrl($conn) {
     $error = $success = '';
     $old = ['name' => '', 'email' => '', 'role' => 'customer', 'address' => '', 'phone' => ''];
@@ -24,7 +24,7 @@ function registerCtrl($conn) {
             $error = 'Password must be at least 8 characters.';
         } elseif ($password !== $confirm) {
             $error = 'Passwords do not match.';
-        } elseif (!in_array($role, ['admin', 'customer'])) {
+        } elseif ($role !== 'customer') {
             $error = 'Invalid role selected.';
         } elseif (emailExists($conn, $email)) {
             $error = 'That email is already registered.';
@@ -84,7 +84,7 @@ function profileCtrl($conn) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $action = $_POST['action'] ?? '';
 
-        /* --- Update info --- */
+        //Update info 
         if ($action === 'update_info') {
             $name    = trim($_POST['name']    ?? '');
             $email   = trim($_POST['email']   ?? '');
@@ -138,7 +138,7 @@ function profileCtrl($conn) {
             }
         }
 
-        //Change password 
+        //Change password
         if ($action === 'change_password') {
             $current = $_POST['current_password'] ?? '';
             $new     = $_POST['new_password']      ?? '';
@@ -161,7 +161,7 @@ function profileCtrl($conn) {
     require 'views/profile.php';
 }
 
-//Home 
+// Home 
 function homeCtrl($conn) {
     $categories = getCategories($conn);
     $medicines  = getMedicines($conn);
