@@ -87,14 +87,16 @@
                                 </td>
                                 <td class="text-right">
                                     <?php if ($order['status'] === 'pending'): ?>
-                                        <button class="btn-sm btn-accept"
-                                                onclick="updateOrder(<?= $order['id'] ?>, 'accepted')">
-                                            Accept
-                                        </button>
-                                        <button class="btn-sm btn-delete"
-                                                onclick="updateOrder(<?= $order['id'] ?>, 'rejected')">
-                                            Reject
-                                        </button>
+                                        <div class="btn-action-group">
+                                            <button class="btn-sm btn-accept"
+                                                    onclick="updateOrder(<?= $order['id'] ?>, 'accepted')">
+                                                Accept
+                                            </button>
+                                            <button class="btn-sm btn-delete"
+                                                    onclick="updateOrder(<?= $order['id'] ?>, 'rejected')">
+                                                Reject
+                                            </button>
+                                        </div>
                                     <?php else: ?>
                                         <span class="text-muted">—</span>
                                     <?php endif; ?>
