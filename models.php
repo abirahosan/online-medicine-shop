@@ -114,8 +114,8 @@ function deleteMedicine($conn, $id) {
     mysqli_stmt_execute($stmt);
     $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
     mysqli_stmt_close($stmt);
-    if ($row && $row['image_path'] && file_exists($row['image_path'])) {
-        unlink($row['image_path']);
+    if ($row && $row['image_path'] && file_exists(__DIR__ . '/' . $row['image_path'])) {
+    unlink(__DIR__ . '/' . $row['image_path']);
     }
 
     $stmt = mysqli_prepare($conn, "DELETE FROM medicines WHERE id = ?");
