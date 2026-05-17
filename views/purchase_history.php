@@ -50,7 +50,7 @@
         </div>
     <?php else: ?>
         <?php foreach ($orders as $i => $order): ?>
-            <div class="card order-card">
+            <div class="card order-card" style="padding: 32px;">
 
                 <div class="order-header">
                     <div class="order-meta">
@@ -74,7 +74,7 @@
                                 <th>Medicine</th>
                                 <th>Unit Price</th>
                                 <th>Quantity</th>
-                                <th class="text-right">Subtotal</th>
+                                <th style="text-align:right">Subtotal</th>
                             </tr>
                         </thead>
                         <tbody>
