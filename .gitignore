@@ -1,0 +1,4 @@
+public/uploads/medicines/*
+!public/uploads/medicines/.gitkeep
+public/uploads/profiles/*
+!public/uploads/profiles/.gitkeep.DS_Store
