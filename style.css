@@ -455,7 +455,19 @@ a:hover { color: var(--text); }
 }
 .order-meta { display: flex; align-items: center; gap: 12px; }
 .order-id   { font-size: 16px; font-weight: 700; color: var(--bright-snow); }
-.order-info { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--pale-slate-2); }
+.order-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 13px;
+    color: #cbd5e1;
+    padding: 0 4px;
+}
+.btn-action-group {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+}
 
 /* footer */
 .footer {
