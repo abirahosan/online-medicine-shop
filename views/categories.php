@@ -120,7 +120,7 @@
                 </thead>
                 <tbody>
                     <?php if (empty($categories)): ?>
-                        <tr><td colspan="5" class="empty">No categories yet.</td></tr>
+                        <tr><td colspan="4" class="empty">No categories yet.</td></tr>
                     <?php else: ?>
                         <?php foreach ($categories as $i => $cat): ?>
                             <tr>
