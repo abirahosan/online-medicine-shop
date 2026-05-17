@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Categories &mdash; Online Medicine Shop</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin.css">
 </head>
 <body class="app-body">
 
@@ -120,7 +120,7 @@
                 </thead>
                 <tbody>
                     <?php if (empty($categories)): ?>
-                        <tr><td colspan="4" class="empty">No categories yet.</td></tr>
+                        <tr><td colspan="5" class="empty">No categories yet.</td></tr>
                     <?php else: ?>
                         <?php foreach ($categories as $i => $cat): ?>
                             <tr>
