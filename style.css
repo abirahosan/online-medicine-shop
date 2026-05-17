@@ -60,7 +60,7 @@ a:hover {
   color: #ffc857;
 }
 
-/* =================== Auth pages =================== */
+/*  Auth pages  */
 .auth-body {
   background: var(--bg);
   min-height: 100vh;
@@ -343,7 +343,7 @@ a:hover {
   margin-top: 8px;
 }
 
-/*  Buttons */
+/*  Buttons  */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -438,7 +438,7 @@ a:hover {
   border-color: var(--error);
 }
 
-/*  Alerts  */
+/*  Alerts */
 .alert {
   padding: 12px 16px;
   border-radius: var(--radius-sm);
@@ -469,7 +469,7 @@ a:hover {
   border-color: var(--success);
 }
 
-/*  App layout  */
+/* App layout */
 .app-body {
   background: var(--bg);
   min-height: 100vh;
@@ -623,7 +623,7 @@ a:hover {
   font-size: 14px;
 }
 
-/*  Card */
+/* Card */
 .card {
   background: var(--bg-2);
   border-radius: var(--radius-lg);
@@ -652,7 +652,7 @@ a:hover {
   flex-wrap: wrap;
 }
 
-/*  Search  */
+/*  Search */
 .search-wrap {
   position: relative;
   flex: 1;
@@ -700,7 +700,7 @@ a:hover {
   text-transform: uppercase;
 }
 
-/*  Category pills  */
+/* Category pills */
 .category-list {
   display: flex;
   flex-wrap: wrap;
@@ -726,7 +726,7 @@ a:hover {
   border-color: var(--primary);
 }
 
-/*  Medicine cards */
+/* Medicine cards */
 .medicine-list {
   display: flex;
   flex-wrap: wrap;
@@ -793,7 +793,7 @@ a:hover {
   color: var(--error);
 }
 
-/*  Table  */
+/* Table */
 .table-wrap {
   overflow-x: auto;
 }
@@ -838,7 +838,7 @@ a:hover {
   font-style: italic;
 }
 
-/*  Footer  */
+/* Footer */
 .footer {
   text-align: center;
   padding: 20px;
@@ -848,7 +848,7 @@ a:hover {
   background: var(--bg-2);
 }
 
-/*  Scrollbar  */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;

@@ -52,7 +52,7 @@
             <p class="auth-foot">Don't have an account?
                 <a href="index.php?page=register">Register here</a>
             </p>
-            <p class="hint"><strong>Default Admin:</strong> admin@medicine.com / admin123</p>
+            <!-- <p class="hint"><strong>Default Admin:</strong> admin@medicine.com / admin123</p> -->
         </div>
     </div>
 </div>

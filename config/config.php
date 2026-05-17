@@ -4,7 +4,7 @@ if (!$conn) {
     die('Database connection failed: ' . mysqli_connect_error());
 }
 mysqli_set_charset($conn, 'utf8mb4');
- 
+
 $check = mysqli_query($conn, "SELECT id FROM users WHERE role='admin' LIMIT 1");
 if ($check && mysqli_num_rows($check) === 0) {
     $hash = password_hash('admin123', PASSWORD_DEFAULT);

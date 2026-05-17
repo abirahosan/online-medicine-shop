@@ -17,9 +17,9 @@
         </a>
         <nav class="nav-links">
             <a class="nav-link active" href="index.php?page=home">Home</a>
-            <a class="nav-link" href="index.php?page=categories">Categories</a>
+            <a class="nav-link" href="index.php?page=browse">Categories</a>
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                <a class="nav-link" href="index.php?page=admin">Dashboard</a>
+                <a class="nav-link" href="index.php?page=dashboard">Dashboard</a>
             <?php endif; ?>
         </nav>
         <div class="nav-user">
@@ -79,10 +79,10 @@
 
     <div class="category-list">
         <a class="cat-pill active" href="index.php?page=home">All</a>
-        <a class="cat-pill" href="index.php?page=categories&type=liquid">Liquid</a>
-        <a class="cat-pill" href="index.php?page=categories&type=solid">Solid</a>
+        <a class="cat-pill" href="index.php?page=browse&type=liquid">Liquid</a>
+        <a class="cat-pill" href="index.php?page=browse&type=solid">Solid</a>
         <?php foreach ($categories as $cat): ?>
-            <a class="cat-pill" href="index.php?page=categories&cat=<?= $cat['id'] ?>">
+            <a class="cat-pill" href="index.php?page=browse&cat=<?= $cat['id'] ?>">
                 <?= htmlspecialchars($cat['name']) ?>
             </a>
         <?php endforeach; ?>
