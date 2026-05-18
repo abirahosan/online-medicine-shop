@@ -113,6 +113,7 @@ function profileCtrl($conn) {
                 if (updateUserProfile($conn, $_SESSION['user_id'], $name, $email, $address, $phone)) {
                     $_SESSION['name'] = $name;
                     $user    = getUserById($conn, $_SESSION['user_id']);
+                    $_SESSION['user'] = $user;
                     $success = 'Profile updated successfully.';
                 } else {
                     $error = 'Update failed. Try again.';
@@ -141,6 +142,7 @@ function profileCtrl($conn) {
                     if (@move_uploaded_file($_FILES['profile_picture']['tmp_name'], $dest)) {
                         updateUserPicture($conn, $_SESSION['user_id'], $filename);
                         $user    = getUserById($conn, $_SESSION['user_id']);
+                        $_SESSION['user'] = $user;
                         $success = 'Profile picture updated.';
                     } else {
                         $error = 'Upload failed. Check folder permissions.';
@@ -181,13 +183,30 @@ function profileCtrl($conn) {
 
 // HOME (Task 1) 
 function homeCtrl($conn) {
-    $categories = getCategories($conn);
-    $medicines  = getMedicines($conn);
+    $categories  = getCategories($conn);
+    $activeCatId = intval($_GET['cat']  ?? 0);  
+    $typeFilter  = $_GET['type'] ?? '';         
+
+    if ($activeCatId > 0) {
+        $medicines = getMedicinesByCategory($conn, $activeCatId);
+    } else {
+        $medicines = getMedicines($conn);
+    }
+
+    if (in_array($typeFilter, ['liquid', 'solid'])) {
+        $medicines = array_values(array_filter($medicines,
+            fn($m) => $m['category_type'] === $typeFilter));
+    }
+
+    $user = isset($_SESSION['user_id'])        
+        ? getUserById($conn, $_SESSION['user_id'])
+        : null;
+
     require 'views/home.php';
 }
 
 // CATEGORIES BROWSE (Task 1) 
-function categoriesBrowseCtrl($conn) {
+/*function categoriesBrowseCtrl($conn) {
     $categories  = getCategories($conn);
     $activeCatId = intval($_GET['cat']  ?? 0);
     $typeFilter  = $_GET['type'] ?? '';
@@ -204,7 +223,7 @@ function categoriesBrowseCtrl($conn) {
     }
 
     require 'views/home.php';
-}
+}*/
 
 // AJAX SEARCH (Task 1) 
 function ajaxSearchCtrl($conn) {

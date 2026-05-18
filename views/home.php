@@ -17,7 +17,6 @@
         </a>
         <nav class="nav-links">
             <a class="nav-link active" href="index.php?page=home">Home</a>
-            <a class="nav-link" href="index.php?page=browse">Categories</a>
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
                 <a class="nav-link" href="index.php?page=dashboard">Dashboard</a>
             <?php endif; ?>
@@ -26,7 +25,14 @@
             <?php if (isset($_SESSION['user_id'])): ?>
                 <a href="index.php?page=profile">
                     <span class="user-pill">
-                        <span class="user-avatar"><?= strtoupper(substr($_SESSION['name'], 0, 1)) ?></span>
+                        <span class="user-avatar">
+                            <?php if (!empty($user['profile_picture'])): ?>
+                                <img src="public/uploads/profiles/<?= htmlspecialchars($user['profile_picture']) ?>"
+                                    alt="<?= htmlspecialchars($user['name']) ?>">
+                            <?php else: ?>
+                                <?= strtoupper(substr($_SESSION['name'], 0, 1)) ?>
+                            <?php endif; ?>
+                        </span>
                         <span class="user-meta">
                             <span class="user-name"><?= htmlspecialchars($_SESSION['name']) ?></span>
                             <span class="user-role"><?= htmlspecialchars($_SESSION['role']) ?></span>
@@ -79,10 +85,10 @@
 
     <div class="category-list">
         <a class="cat-pill active" href="index.php?page=home">All</a>
-        <a class="cat-pill" href="index.php?page=browse&type=liquid">Liquid</a>
-        <a class="cat-pill" href="index.php?page=browse&type=solid">Solid</a>
+        <a class="cat-pill" href="index.php?page=home&type=liquid">Liquid</a>
+        <a class="cat-pill" href="index.php?page=home&type=solid">Solid</a>
         <?php foreach ($categories as $cat): ?>
-            <a class="cat-pill" href="index.php?page=browse&cat=<?= $cat['id'] ?>">
+            <a class="cat-pill" href="index.php?page=home&cat=<?= $cat['id'] ?>">
                 <?= htmlspecialchars($cat['name']) ?>
             </a>
         <?php endforeach; ?>
@@ -96,7 +102,7 @@
             <?php foreach ($medicines as $m): ?>
                 <div class="medicine-card">
                     <?php if (!empty($m['image_path'])): ?>
-                        <img src="public/uploads/medicines/<?= htmlspecialchars($m['image_path']) ?>"
+                        <img src="<?= htmlspecialchars($m['image_path']) ?>"
                              alt="<?= htmlspecialchars($m['name']) ?>">
                     <?php else: ?>
                         <div style="width:100%;height:150px;background:var(--bg-3);display:flex;align-items:center;justify-content:center;font-size:32px;">&#128138;</div>
@@ -105,7 +111,7 @@
                         <div class="medicine-card-name"><?= htmlspecialchars($m['name']) ?></div>
                         <div class="medicine-card-vendor"><?= htmlspecialchars($m['vendor_name']) ?> &middot; <?= htmlspecialchars($m['category_name']) ?></div>
                         <div class="medicine-card-footer">
-                            <span class="medicine-price">$<?= number_format($m['price'], 2) ?></span>
+                            <span class="medicine-price">৳<?= number_format($m['price'], 2) ?></span>
                             <?php if ($m['availability'] > 0): ?>
                                 <span class="stock-badge stock-in">In Stock</span>
                             <?php else: ?>
@@ -146,8 +152,9 @@
         }
         var html = '';
         rows.forEach(function (m) {
+            // image_path already contains full relative path — use it directly
             var img = m.image_path
-                ? '<img src="public/uploads/medicines/' + esc(m.image_path) + '" alt="' + esc(m.name) + '">'
+                ? '<img src="' + esc(m.image_path) + '" alt="' + esc(m.name) + '">'
                 : '<div style="width:100%;height:150px;background:var(--bg-3);display:flex;align-items:center;justify-content:center;font-size:32px;">&#128138;</div>';
             var stock = parseInt(m.availability) > 0
                 ? '<span class="stock-badge stock-in">In Stock</span>'
@@ -159,7 +166,7 @@
                         '<div class="medicine-card-name">' + esc(m.name) + '</div>' +
                         '<div class="medicine-card-vendor">' + esc(m.vendor_name) + ' &middot; ' + esc(m.category_name) + '</div>' +
                         '<div class="medicine-card-footer">' +
-                            '<span class="medicine-price">$' + esc(m.price) + '</span>' +
+                            '<span class="medicine-price">৳' + esc(m.price) + '</span>' +
                             stock +
                         '</div>' +
                     '</div>' +

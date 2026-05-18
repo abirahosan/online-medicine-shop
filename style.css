@@ -738,7 +738,7 @@ a:hover {
   border-radius: var(--radius-lg);
   overflow: hidden;
   transition: var(--transition);
-  width: 220px;
+  width: 216px;
 }
 .medicine-card:hover {
   border-color: var(--border-primary);

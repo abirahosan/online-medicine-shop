@@ -16,6 +16,7 @@
             <span>MediShop Admin</span>
         </a>
         <nav class="nav-links">
+            <a href="index.php?page=home" class="nav-link">Home</a>
             <a href="index.php?page=dashboard"  class="nav-link">Dashboard</a>
             <a href="index.php?page=categories" class="nav-link">Categories</a>
             <a href="index.php?page=medicines"  class="nav-link">Medicines</a>
@@ -24,13 +25,21 @@
             <a href="index.php?page=history"    class="nav-link">History</a>
         </nav>
         <div class="nav-user">
-            <span class="user-pill">
-                <span class="user-avatar"><?= strtoupper(substr($user['name'], 0, 1)) ?></span>
+            <a href="index.php?page=profile" class="user-pill">
+                <span class="user-avatar">
+                    <?php if (!empty($user['profile_picture'])): ?>
+                        <img src="/online-medicine-shop/public/uploads/profiles/<?= htmlspecialchars($user['profile_picture']) ?>"
+                            alt="<?= htmlspecialchars($user['name']) ?>"
+                            style="width:28px;height:28px;border-radius:50%;object-fit:cover;display:block;">
+                    <?php else: ?>
+                        <?= strtoupper(substr($user['name'], 0, 1)) ?>
+                    <?php endif; ?>
+                </span>
                 <span class="user-meta">
                     <span class="user-name"><?= htmlspecialchars($user['name']) ?></span>
                     <span class="user-role">Admin</span>
                 </span>
-            </span>
+            </a>
             <a href="index.php?page=logout" class="btn-logout">Logout</a>
         </div>
     </div>

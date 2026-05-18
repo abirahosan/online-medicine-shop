@@ -17,9 +17,8 @@
         </a>
         <nav class="nav-links">
             <a class="nav-link" href="index.php?page=home">Home</a>
-            <a class="nav-link" href="index.php?page=categories">Categories</a>
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                <a class="nav-link" href="index.php?page=admin">Dashboard</a>
+                <a class="nav-link" href="index.php?page=dashboard">Dashboard</a>
             <?php endif; ?>
         </nav>
         <div class="nav-user">
